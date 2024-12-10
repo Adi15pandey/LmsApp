@@ -32,7 +32,7 @@ class SearchScreen extends StatelessWidget {
         title: Text(
           'Search',
           style: TextStyle(
-            color: Colors.blue[900],
+            color: Color.fromRGBO(10,36,114,1),
 
           ),
 
@@ -45,12 +45,12 @@ class SearchScreen extends StatelessWidget {
           Center(
             child: Opacity(
               opacity: 0.9,
-              child: Image.asset(
-                'assets/images/bg.jpg',
-                width: 466,
-                height: 390,
-                fit: BoxFit.cover,
-              ),
+              // child: Image.asset(
+              //   'assets/images/bg.jpg',
+              //   width: 466,
+              //   height: 390,
+              //   fit: BoxFit.cover,
+              // ),
             ),
           ),
           Center(
@@ -62,7 +62,7 @@ class SearchScreen extends StatelessWidget {
                 children: [
                   Text(
                     'SEARCH BY ACC NO.',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Color.fromRGBO(10,36,114,1),),
                   ),
                   SizedBox(height: 20),
                   Container(
@@ -125,7 +125,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   Future<void> _fetchSearchResults() async {
     final searchQuery = widget.searchQuery;
     final apiUrl =
-        'https://lms.recqarz.com/api/notice/filterWithAccountRefnoPOD?name=&account=$searchQuery&ref_no=&mobilenumber=&startDate=&endDate=&page=1&limit=10';
+        'https://lms.recqarz.com/api/notice/filterWithAccountRefnoPOD?name=&account=$searchQuery&ref_no=&mobilenumber=&startDate=&endDate=&page=1&limit=100000';
 
     final token =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U ';
@@ -187,6 +187,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     return Center(
       child: Scaffold(
         appBar: AppBar(
+          foregroundColor: Color.fromRGBO(10,36,114,1),
           title: Text('Search Results'),
           centerTitle: true,
 
@@ -216,7 +217,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Color.fromRGBO(10, 36, 114, 1), width: 0.75), // Blue border
-                          borderRadius: BorderRadius.circular(10), // Rounded corners
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: DataTable(
                           columns: [
@@ -247,7 +248,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               SizedBox(height: 20),
               Text(
                 'Results for: ${widget.searchQuery}',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(fontWeight: FontWeight.w500,color: Color.fromRGBO(10,36,114,1),),
               ),
             ],
           ),

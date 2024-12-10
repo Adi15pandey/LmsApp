@@ -49,7 +49,7 @@ class _FileListScreenState extends State<FileListScreen> {
   Future<void> fetchData() async {
     final response = await http.get(
       Uri.parse(
-          'https://lms.recqarz.com/api/notice/notices-entries?NoticeID=${widget.ID}&startDate=30/6/2000&endDate=30/6/2025&page=1&limit=10'),
+          'https://lms.recqarz.com/api/notice/notices-entries?NoticeID=${widget.ID}&startDate=30/6/2000&endDate=30/6/2025&page=1&limit=100000000'),
       headers: {
         'Authorization': 'Bearer $token',
       },

@@ -22,7 +22,7 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
   // Fetch data with dynamic consignment ID
   Future<void> fetchData() async {
     final response = await http.get(
-      Uri.parse('https://lms.test.recqarz.com/api/track/${widget.consignmentId}?page=1&limit=10'),
+      Uri.parse('https://lms.test.recqarz.com/api/track/${widget.consignmentId}?page=1&limit=1000000'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -63,33 +63,50 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Consignment Tracking')),
+      appBar: AppBar(
+          foregroundColor: Color.fromRGBO(10,36,114,1),title: Text('Consignment Tracking')
+      ),
+
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: consignments.length,
         itemBuilder: (context, index) {
           final consignment = consignments[index];
-          return Card(
+          return Container(
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              title: Text(consignment['CONSIGNMENT_NO'] ?? 'No consignment number'),
-              subtitle: Text(consignment['status'] ?? 'No status'),
-              trailing: IconButton(
-                icon: Icon(Icons.picture_as_pdf),
-                color: Color.fromRGBO(181, 12, 12, 1.0),
-                onPressed: () {
-                  // Check if the PDF link is available and valid
-                  if (consignment['pdf'] != null && consignment['pdf'].isNotEmpty) {
-                    _launchURL(consignment['pdf']); // Launch the PDF link
-                  }
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Color.fromRGBO(10, 36, 114, 1),
+                width: 2.0, // Adjust the border width as needed
+              ),
+              borderRadius: BorderRadius.circular(4.0), // Match the card border radius
+            ),
+            child: Card(
+              elevation: 2.0, // Optional: add elevation for shadow effect
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0), // Match the container border radius
+              ),
+              child: ListTile(
+                title: Text(consignment['CONSIGNMENT_NO'] ?? 'No consignment number'),
+                subtitle: Text(consignment['status'] ?? 'No status'),
+                trailing: IconButton(
+                  icon: Icon(Icons.picture_as_pdf),
+                  color: Color.fromRGBO(181, 12, 12, 1.0),
+                  onPressed: () {
+                    // Check if the PDF link is available and valid
+                    if (consignment['pdf'] != null && consignment['pdf'].isNotEmpty) {
+                      _launchURL(consignment['pdf']); // Launch the PDF link
+                    }
+                  },
+                ),
+                onTap: () {
+                  // Add navigation or other logic here if needed
                 },
               ),
-              onTap: () {
-                // Add navigation or other logic here if needed
-              },
             ),
           );
+
         },
       ),
     );

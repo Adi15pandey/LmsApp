@@ -90,7 +90,7 @@ class _FilesScreenState extends State<FilesScreen> {
         automaticallyImplyLeading: Platform.isIOS ? true : false,
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt_outlined),
+            icon: Icon(Icons.filter_alt_outlined,color: Color.fromRGBO(10,36,114,1),),
             onPressed: () {
               showDialog(
                 context: context,

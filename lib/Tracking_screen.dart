@@ -49,7 +49,7 @@ class FileRecord {
 
 // API Service
 class ApiService {
-  final String apiUrl = "https://lms.test.recqarz.com/api/track/all?page=1&limit=10";
+  final String apiUrl = "https://lms.test.recqarz.com/api/track/all?page=1&limit=1000000";
   final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgwODMyMiwiZXhwIjoxNzMzODk0NzIyfQ.ZiBY47T9tXvPXApijOuy6lsWuUmFlGx4Itv-brN6mLc"; // Add your token here
 
   Future<List<FileRecord>> fetchFileRecords() async {
@@ -89,6 +89,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Color.fromRGBO(10,36,114,1),
         title: Text('File Tracker'),
       ),
       body: FutureBuilder<List<FileRecord>>(
@@ -105,29 +106,42 @@ class _TrackingScreenState extends State<TrackingScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 FileRecord file = snapshot.data![index];
-                return Card(
+                return Container(
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: ListTile(
-                    title: Text(file.filename),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Status: ${file.status}'),
-                        Text('Created At: ${DateFormat('MM/dd/yyyy').format(file.createdAt)}'),
-                      ],
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color.fromRGBO(10, 36, 114, 1),
+                      width: 2.0, // Adjust the border width as needed
                     ),
-                    trailing: file.status == 'process'
-                        ? Text('Processing')
-                        : TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ConsignmentTracking(consignmentId: file.id),
-                          ),
-                        );
-                      },
-                      child: Text('View Details'),
+                    borderRadius: BorderRadius.circular(4.0), // Match the card border radius
+                  ),
+                  child: Card(
+                    elevation: 2.0, // Optional: add elevation for shadow effect
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0), // Match the container border radius
+                    ),
+                    child: ListTile(
+                      title: Text(file.filename),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Status: ${file.status}'),
+                          Text('Created At: ${DateFormat('MM/dd/yyyy').format(file.createdAt)}'),
+                        ],
+                      ),
+                      trailing: file.status == 'process'
+                          ? Text('Processing')
+                          : TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConsignmentTracking(consignmentId: file.id),
+                            ),
+                          );
+                        },
+                        child: Text('View Details'),
+                      ),
                     ),
                   ),
                 );

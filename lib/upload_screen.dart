@@ -19,13 +19,13 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   void initState() {
     super.initState();
-    fetchData();  // Fetch data when the screen is loaded
+    fetchData();
   }
 
   String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzc0NzMwNCwiZXhwIjoxNzMzODMzNzA0fQ.QtkiTyPLJDqwjaiO6ZY5NiG0SoOg2xSk44Jp2InVFuU'; // Add your token here
 
   Future<void> fetchData() async {
-    final url = 'https://lms.test.recqarz.com/api/econciliation/get?page=1&limit=10';
+    final url = 'https://lms.test.recqarz.com/api/econciliation/get?page=1&limit=10000000';
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -64,7 +64,9 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Color.fromRGBO(10,36,114,1),
         title: Text('Upload Data'),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -89,25 +91,40 @@ class _UploadScreenState extends State<UploadScreen> {
                   : ListView.builder(
                 itemCount: conciliationResponse!.conciliations.length,
                 itemBuilder: (context, index) {
-                  return Card(
+                  return Container(
                     margin: EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text(
-                        conciliationResponse!.conciliations[index].filename,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color.fromRGBO(10, 36, 114, 1),
+                        width: 2.0, // Adjust the border width as needed
                       ),
-                      subtitle: Text('Created At: ${conciliationResponse!.conciliations[index].createdAt}'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.download),
-                        onPressed: () {
-                          _downloadFile(conciliationResponse!.conciliations[index].s3Url);
-                        },
+                      borderRadius: BorderRadius.circular(4.0), // Match the card border radius
+                    ),
+                    child: Card(
+                      elevation: 2.0, // Optional: add elevation for shadow effect
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0), // Match the container border radius
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          conciliationResponse!.conciliations[index].filename,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text('Created At: ${conciliationResponse!.conciliations[index].createdAt}'),
+                        trailing: IconButton(
+                          icon: Icon(Icons.download),
+                          color: Color.fromRGBO(228, 16, 16, 1.0),
+                          onPressed: () {
+                            _downloadFile(conciliationResponse!.conciliations[index].s3Url);
+                          },
+                        ),
                       ),
                     ),
                   );
                 },
               ),
             ),
+
           ],
         ),
       ),

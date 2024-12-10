@@ -87,7 +87,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,8 +97,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Image.asset(
+                'assets/images/Group 1.png',
+                width: 400,
+                height: 150,
+              ),
+              SizedBox(height: 20),
               Text(
-                'Login',
+                'Welcome',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
@@ -124,16 +129,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              // GestureDetector(
-              //   onTap: () {
-              //     // Add your forgot password functionality
-              //   },
-              //   child: Text(
-              //     'Forgot Password?',
-              //     style: TextStyle(color: Colors.blue),
-              //   ),
-              // ),
-              SizedBox(height: 20),
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
@@ -147,16 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-              // GestureDetector(
-              //   onTap: () {
-              //     // Add your admin login functionality here
-              //   },
-              //   child: Text(
-              //     'Login as the Admin',
-              //     style: TextStyle(color: Colors.blue),
-              //   ),
-              // ),
             ],
           ),
         ),
