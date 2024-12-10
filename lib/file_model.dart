@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Notice {
   final String id;
   final String smsStatus;
@@ -7,7 +9,7 @@ class Notice {
   final String shortURL;
   final NoticeID noticeID;
   final Data data;
-  final  String date;
+  final String date;
 
   Notice({
     required this.date,
@@ -23,16 +25,35 @@ class Notice {
 
   factory Notice.fromJson(Map<String, dynamic> json) {
     return Notice(
-      id: json['_id'] ?? '', // Default to an empty string if null
-      shortURL : json['shortURL'] ?? '',
-      date:json['date']?? '',
-      whatsappStatus: json['whatsappStatus'] ?? '', // Default to an empty string if null
-      smsStatus: json['smsStatus'] ?? '', // Default to an empty string if null
-      notificationType: json['notificationType'] ?? '', // Default to an empty string if null
-      processIndiaPost: json['processIndiaPost'] ?? '', // Default to an empty string if null
-      noticeID: NoticeID.fromJson(json['NoticeID'] ?? {}), // Empty object if null
-      data: Data.fromJson(json['data'] ?? {}), // Empty object if null
+      id: json['_id'] ?? '',
+      shortURL: json['shortURL'] ?? '',
+      date: _parseDate(json['date']),
+      whatsappStatus: json['whatsappStatus'] ?? '',
+      smsStatus: json['smsStatus'] ?? '',
+      notificationType: json['notificationType'] ?? '',
+      processIndiaPost: json['processIndiaPost'] ?? '',
+      noticeID: NoticeID.fromJson(json['NoticeID'] ?? {}),
+      data: Data.fromJson(json['data'] ?? {}),
     );
+  }
+
+  // Helper function to parse the date
+  static String _parseDate(dynamic dateJson) {
+    if (dateJson == null) {
+      return '';
+    }
+
+    if (dateJson is String) {
+      return dateJson; // If it's a string, return it as is
+    }
+
+    if (dateJson is int) {
+      // If it's a timestamp, convert to DateTime and format it
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(dateJson);
+      return DateFormat('yyyy-MM-dd').format(dateTime);
+    }
+
+    return ''; // Default to empty string if neither string nor int
   }
 }
 
@@ -47,8 +68,8 @@ class NoticeID {
 
   factory NoticeID.fromJson(Map<String, dynamic> json) {
     return NoticeID(
-      filename: json['filename'] ?? '', // Default to an empty string if null
-      user: json['user'] ?? '', // Default to an empty string if null
+      filename: json['filename'] ?? '',
+      user: json['user'] ?? '',
     );
   }
 }
@@ -70,11 +91,45 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
-      account: json['account'] ?? 0, // Default to 0 if null
-      date: json['date'] ?? '', // Default to an empty string if null
-      email: json['email'] ?? '', // Default to an empty string if null
-      mobileNumber: json['mobilenumber'] ?? 0, // Default to 0 if null
-      name: json['name'] ?? '', // Default to an empty string if null
+      account: int.tryParse(json['account'].toString()) ?? 0,
+      date: _parseDate(json['date']),
+      email: json['email'] ?? '',
+      mobileNumber: _parseMobileNumber(json['mobilenumber']),
+      name: json['name'] ?? '',
     );
+  }
+
+
+  static int _parseMobileNumber(dynamic mobileNumberJson) {
+    if (mobileNumberJson == null) {
+      return 0;
+    }
+    if (mobileNumberJson is String) {
+
+      return int.tryParse(mobileNumberJson) ?? 0;  // Return 0 if parsing fails
+    }
+    if (mobileNumberJson is int) {
+      return mobileNumberJson;
+    }
+    return 0;  // Default to 0 if neither string nor int
+  }
+
+  // Helper function to parse the date
+  static String _parseDate(dynamic dateJson) {
+    if (dateJson == null) {
+      return '';
+    }
+
+    if (dateJson is String) {
+      return dateJson;
+    }
+
+    if (dateJson is int) {
+
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(dateJson);
+      return DateFormat('yyyy-MM-dd').format(dateTime);
+    }
+
+    return '';
   }
 }

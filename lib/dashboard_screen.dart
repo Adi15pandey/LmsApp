@@ -1,55 +1,148 @@
-
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:lms_practice/Logout_screen.dart';
+import 'package:lms_practice/Tracking_screen.dart';
 import 'package:lms_practice/login_screen.dart';
+import 'dart:convert';
 
+import 'package:lms_practice/upload_screen.dart';
 
+import 'AddNewUser.dart';
+
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dashboard with Logout',
-      initialRoute: '/',
-      routes: {
-        '/login': (context) => LoginScreen(),
-      },
+      title: 'LMS Dashboard',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: DashboardScreen(),
     );
   }
 }
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
+  @override
+  _DashboardScreenState createState() => _DashboardScreenState();
+}
 
-  // Function to navigate to LoginScreen after logout
-  Future<void> _logOut(BuildContext context) async {
-    Navigator.pushReplacementNamed(context, '/login');
+class _DashboardScreenState extends State<DashboardScreen> {
+  final TextEditingController startDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
+  List<String> noticeTypes = ['All'];
+  String selectedNoticeType = 'All';
+
+  int totalRecords = 0;
+  Map<String, int> noticeTypeCount = {};
+
+  final String token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNoticeTypes();
   }
 
-  // Function to show the confirmation dialog
-  Future<void> _confirmLogout(BuildContext context) async {
-    final shouldLogOut = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Are you sure?'),
-        content: Text('Do you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-              _logOut(context);
-            },
-            child: Text('Log Out'),
-          ),
-        ],
-      ),
-    );
+  Future<void> fetchNoticeTypes() async {
+    final url = 'https://lms.recqarz.com/api/clientMapping/user';
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
-    if (shouldLogOut == true) {
-      _logOut(context);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Notice types data: $data'); // Debug print
+        setState(() {
+          noticeTypes = ['All'];
+          noticeTypes.addAll(List<String>.from(data['data'] ?? []));
+          print('Notice types updated: $noticeTypes'); // Debug print
+        });
+      } else {
+        print('Failed to load notice types: ${response.statusCode}'); // Debug print
+        // showError('Failed to load notice types: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error'); // Debug print
+      // showError('An error occurred: $error');
+    }
+  }
+
+  Future<void> fetchData() async {
+    final startDate = startDateController.text.isNotEmpty
+        ? startDateController.text
+        : DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final endDate = endDateController.text.isNotEmpty
+        ? endDateController.text
+        : DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final noticeType = selectedNoticeType;
+
+    final url = 'https://lms.recqarz.com/api/dashboard/getDataByClientId?clientId=NotALL'
+        '&dateRange=${startDate.isNotEmpty && endDate.isNotEmpty ? '$startDate,$endDate' : ''}'
+        '&serviceType=all'
+        '&dateType=fileProcessed'
+        '&noticeType=${noticeType != 'All' ? noticeType : ''}';
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          final noticeTypeTotalCount = data['data']['noticeTypeTotalCount'] ?? {};
+          noticeTypeCount = Map<String, int>.from(noticeTypeTotalCount.map(
+                (key, value) => MapEntry(key, value is num ? value.toInt() : value),
+          ));
+          totalRecords = noticeTypeCount.values.fold(0, (sum, count) => sum + count);
+        });
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+        // showError('Failed to load data: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error'); // Debug print
+      // showError('An error occurred: $error');
+    }
+  }
+
+  // void showError(String message) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(message),
+  //       backgroundColor: Colors.red,
+  //     ),
+  //   );
+  // }
+
+  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
     }
   }
 
@@ -57,274 +150,292 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              _confirmLogout(context);
-            },
+        foregroundColor: Color.fromRGBO(10,36,114,1),
+        //textColor: Color.fromRGBO(10, 36, 114, 1),
+        //               iconColor: Color.fromRGBO(10, 36, 114, 1),
+        title: Text('LMS Dashboard'),
+
+
+        // actions: [
+        //   Builder(
+        //     builder: (context) => IconButton(
+        //       icon: Icon(Icons.menu),
+        //       onPressed: () => Scaffold.of(context).openDrawer(),
+        //     ),
+        //   ),
+        // ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(),
+            ),
+            ListTile(
+              leading: Icon(Icons.dashboard_outlined),
+              title: Text('Dashboard'),
+              textColor: Color.fromRGBO(10, 36, 114, 1),
+              iconColor: Color.fromRGBO(10, 36, 114, 1),
+              onTap: () {
+                Navigator.pop(context);
+                // Navigate to Dashboard
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.upload_file),
+              title: Text('Upload Data'),
+              textColor: Color.fromRGBO(10, 36, 114, 1),
+              iconColor: Color.fromRGBO(10, 36, 114, 1),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UploadScreen()),  // Navigate to UploadScreen
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.spatial_tracking),
+              title: Text('Tracking'),
+              textColor: Color.fromRGBO(10, 36, 114, 1),
+              iconColor: Color.fromRGBO(10, 36, 114, 1),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TrackingScreen()),  // Navigate to UploadScreen
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.fiber_new_rounded),
+              title: Text("Add New User"),
+              textColor: Color.fromRGBO(10, 36, 114, 1),
+              iconColor: Color.fromRGBO(10, 36, 114, 1),
+              onTap: (){
+                Navigator.pop(context);
+                Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context)=> AddNewUser()),
+                );
+              },
+
+            ),
+
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              textColor: Color.fromRGBO(10, 36, 114, 1),
+              iconColor: Color.fromRGBO(10, 36, 114, 1),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LogoutScreen()),
+                );
+                // Navigator.push(context, MaterialPageRoute(builder: context)=>)
+                // Handle logout
+              },
+            ),
+          ],
+        ),
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 01, left: 5),
+                    child: Image.asset(
+                      'assets/images/Untitled-4 2 (1).png',
+                      height: 40,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  _buildFilterSection(constraints),
+                  SizedBox(height: 20),
+                  _buildStatisticsSection(constraints),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
+  Widget _buildFilterSection(BoxConstraints constraints) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDateField('Start Date', startDateController, constraints),
+        SizedBox(height: 10),
+        _buildDateField('End Date', endDateController, constraints),
+        SizedBox(height: 10),
+        _buildNoticeTypeField('Notice Type', constraints),
+        SizedBox(height: 20),
+        Center(
+          child: ElevatedButton(
+            onPressed: fetchData,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+            ),
+            child: Text('Search'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateField(String label, TextEditingController controller, BoxConstraints constraints) {
+    return GestureDetector(
+      onTap: () => _selectDate(context, controller),
+      child: AbsorbPointer(
+        child: Container(
+          width: constraints.maxWidth > 600 ? 400 : double.infinity,
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: label,
+              border: OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () => _selectDate(context, controller),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoticeTypeField(String label, BoxConstraints constraints) {
+    return Container(
+      width: constraints.maxWidth > 600 ? 400 : double.infinity,
+      child: DropdownButtonFormField<String>(
+        value: selectedNoticeType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (String? newValue) {
+          setState(() {
+            selectedNoticeType = newValue!;
+          });
+        },
+        items: noticeTypes.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildStatisticsSection(BoxConstraints constraints) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTotalRecords(constraints),
+        SizedBox(height: 20),
+        _buildNoticeTypeCard(constraints),
+      ],
+    );
+  }
+
+  Widget _buildTotalRecords(BoxConstraints constraints) {
+    return Center(
+      child: Center(
+        child: Container(
+          width: constraints.maxWidth > 600 ? 400 : double.infinity,
+          padding: EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(101, 85, 143, 1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            'Total Records: $totalRecords',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoticeTypeCard(BoxConstraints constraints) {
+    return Container(
+      width: constraints.maxWidth > 600 ? 400 : double.infinity,
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(243, 237, 247, 1),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(243, 237, 247, 1),
+            blurRadius: 5,
+            offset: Offset(0, 1),
           ),
         ],
       ),
-      body: Center(
-        child: Text('Dashboard Screen'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              'Notice Type Total Count',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Divider(color: Color.fromRGBO(243, 237, 247, 1)),
+          Column(
+            children: noticeTypeCount.entries.map((entry) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.purple[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        entry.key,
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      Text(
+                        entry.value.toString(),
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//
-//
-// import 'package:areness/file_model.dart';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:open_file/open_file.dart';
-// // import 'package:url_launcher/url_launcher.dart';
-// import 'dart:convert';
-//
-// class FileListScreen extends StatefulWidget {
-//   final String filename;
-//   final String ID;
-//
-//   FileListScreen({required this.filename, required this.ID,});
-//
-//   @override
-//   _FileListScreenState createState() => _FileListScreenState();
-// }
-//
-// class _FileListScreenState extends State<FileListScreen> {
-//   int _currentIndex = 1;
-//   List<Notice> _notices = [];
-//   bool _isLoading = true;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     fetchData();
-//     print("00000000000000000000000000000000000000000");
-//     print(widget.ID);
-//   }
-//   final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMjg2MjI0NCwiZXhwIjoxNzMyOTQ4NjQ0fQ.R-3kddMQ_eYasmd1-NNeIPukeNrecRhdkjOpnUSXUPY";
-//   Future<void> fetchData() async {
-//     final response = await http.get(
-//       Uri.parse(
-//           'https://lms.test.recqarz.com/api/notice/notices-entries?NoticeID=${widget.ID}&startDate=30/6/2023&endDate=30/6/2025&page=1&limit=10'),
-//       headers: {
-//         'Authorization': 'Bearer $token',
-//       },
-//     );
-//     print('Response body: ${response.body}');
-//
-//     if (response.statusCode == 200) {
-//       final List<dynamic> data = json.decode(response.body)['data'];
-//       setState(() {
-//         _notices = data.map((json) => Notice.fromJson(json)).toList();
-//         _isLoading = false;
-//       });
-//     } else {
-//       throw Exception('Failed to load data');
-//     }
-//   }
-//
-//
-//   void _onBottomNavigationTap(int index) {
-//     setState(() {
-//       _currentIndex = index;
-//     });
-//     if (index == 0) {
-//       print("Dashboard selected");
-//     } else if (index == 2) {
-//       print("Search selected");
-//     } else if (index == 3) {
-//       print("SBI selected");
-//     }
-//   }
-//
-//
-//   void _showDetailDialog(Map<String, String> rowData) {
-//
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return AlertDialog(
-//           content: SingleChildScrollView(
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Text(
-//                       'Name: ${rowData['name']}',
-//                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//                     ),
-//                     GestureDetector(
-//                       onTap: () {
-//                         Navigator.of(context).pop();
-//                       },
-//                       child: Icon(Icons.close, color: Colors.grey),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 8),
-//                 Text('Date: ${rowData['date']}'),
-//                 SizedBox(height: 16),
-//                 ListTile(
-//                   title: Text(' Whatsapp '),
-//                   trailing: Text('Whatsapp: ${rowData['status']}'),
-//                 ),
-//                 Divider(),
-//                 ListTile(
-//                   title: Text('SMS'),
-//                   trailing: Text('SMS: ${rowData['smsStatus']}'),
-//                 ),
-//                 Divider(),
-//                 ListTile(
-//                   title: Text('Email'),
-//                   trailing: Text('Email: ${rowData['notificationType']}'),
-//                 ),
-//                 Divider(),
-//                 ListTile(
-//                   title: Text('Indiapost'),
-//                   trailing: Text('Indiapost: ${rowData['processIndiaPost']}'),
-//                 ),
-//                 SizedBox(height: 16),
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                   children: [
-//                     Column(
-//                       children: [
-//                         GestureDetector(
-//                           onTap: () {
-//
-//                             String shortURL = rowData['shortURL'] ?? '';
-//                             if (shortURL.isNotEmpty) {
-//                               _openPDF(shortURL);
-//                             } else {
-//                               print('No URL found');
-//                             }
-//                           },
-//                           child: Icon(Icons.picture_as_pdf, color: Colors.red),
-//                         ),
-//                         SizedBox(height: 4),
-//                         Text('Notice Copy', style: TextStyle(fontSize: 12)),
-//                       ],
-//                     ),
-//                     Column(
-//                       children: [
-//                         Icon(Icons.picture_as_pdf, color: Colors.red),
-//                         SizedBox(height: 4),
-//                         Text('Tracking Details', style: TextStyle(fontSize: 12)),
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Files'),
-//         backgroundColor: Colors.white,
-//         elevation: 1,
-//         titleTextStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
-//       ),
-//       body: _isLoading
-//           ? Center(child: CircularProgressIndicator())
-//           : SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: DataTable(
-//             headingRowHeight: 40,
-//             dataRowHeight: 60,
-//             columnSpacing: 20,
-//             headingRowColor: MaterialStateColor.resolveWith((states) => Colors.orange.shade100),
-//             columns: [
-//               DataColumn(label: Text('S. No.')),
-//               DataColumn(label: Text('Name')),
-//               DataColumn(label: Text('Mobile No.')),
-//               DataColumn(label: Text('Account')),
-//               DataColumn(label: Text('View')),
-//             ],
-//             rows: _notices.asMap().entries.map((entry) {
-//               int index = entry.key + 1; // Serial number starts from 1
-//               Notice notice = entry.value;
-//               return DataRow(
-//                 cells: [
-//                   DataCell(Text(index.toString())),
-//                   DataCell(Text(notice.data.name)),
-//                   DataCell(Text(notice.data.mobileNumber.toString())),
-//                   DataCell(Text(notice.data.account.toString())),
-//                   DataCell(
-//                     GestureDetector(
-//                       onTap: () {
-//                         _showDetailDialog({
-//                           'name': notice.data.name,
-//                           'date': notice.data.date,
-//                           'status': notice.whatsappStatus,
-//                           'smsStatus':notice.smsStatus,
-//                           'notificationType':notice.notificationType,
-//                           'processIndiaPost':notice.processIndiaPost,
-//                           'shortURL': notice.shortURL,
-//
-//
-//                         });
-//                       },
-//                       child: Text(
-//                         'View More',
-//                         style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               );
-//             }).toList(),
-//           ),
-//         ),
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         currentIndex: _currentIndex,
-//         onTap: _onBottomNavigationTap,
-//         selectedItemColor: Colors.purple,
-//         unselectedItemColor: Colors.grey,
-//         showSelectedLabels: true,
-//         showUnselectedLabels: true,
-//         items: [
-//           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
-//           BottomNavigationBarItem(icon: Icon(Icons.folder), label: 'Files'),
-//           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-//           BottomNavigationBarItem(icon: Icon(Icons.account_balance), label: 'SBI'),
-//         ],
-//       ),
-//     );
-//   }
-//   void _openPDF(String url) async {
-//     final result = await OpenFile.open(url);
-//     if (result.type != ResultType.done) {
-//       print('Error opening PDF file: ${result.message}');
-//     }
-//   }
-// }
-//

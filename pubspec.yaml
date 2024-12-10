@@ -47,6 +47,8 @@ dev_dependencies:
   flutter_linkify: ^6.0.0
   open_url: ^2.0.1
   url_launcher:
+  shared_preferences:
+  file_picker: ^8.1.4
 
 
 
@@ -72,9 +74,11 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/Untitled-4 2 (1).png
+    - assets/images/bg.jpg
+    - assets/images/check-mark.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

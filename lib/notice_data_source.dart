@@ -1,40 +1,43 @@
-
-import 'package:lms_practice/filelistscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'notice_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'filelistscreen.dart';
 
 class NoticeDataSource extends DataTableSource {
-  final List<NoticeModel> notices = [];
+  late List<NoticeModel> notices = [];
   bool _isLoading = true;
   String _errorMessage = '';
-  final BuildContext context;
 
-  NoticeDataSource(this.context);
+  NoticeDataSource([noticeList]);
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
+  void updateData(List<NoticeModel> newNotices) {
+    notices = newNotices;
+    _isLoading = false;
+    notifyListeners();
+  }
+
   Future<void> fetchData(DateTime startDate, DateTime endDate, String selectedNoticeType, String searchQuery) async {
-    final String apiUrl = 'https://lms.test.recqarz.com/api/notice/notices';
+    final String apiUrl = 'https://lms.recqarz.com/api/notice/notices';
 
     final Map<String, String> params = {
       'startDate': DateFormat('yyyy-MM-dd').format(startDate),
       'endDate': DateFormat('yyyy-MM-dd').format(endDate),
       'page': '1',
-      'limit': '1000',
-      'client':"",
-      'notice':"",
+      'limit': '100000',
+      'client': "",
+      'notice': "",
       if (selectedNoticeType != 'All') 'NoticeID': selectedNoticeType,
       if (searchQuery.isNotEmpty) 'search': searchQuery,
     };
 
-    final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzAzOTY0MiwiZXhwIjoxNzMzMTI2MDQyfQ.q7NWBweWMycRWWUHG5LO2AmX6hgGuhOcZqpQBpkrTDk';
+    final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U';
 
     try {
-      print(params);
       final uri = Uri.parse(apiUrl).replace(queryParameters: params);
       final response = await http.get(
         uri,
@@ -42,7 +45,6 @@ class NoticeDataSource extends DataTableSource {
           'Authorization': 'Bearer $token',
         },
       );
-      // print(response.body);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -68,33 +70,43 @@ class NoticeDataSource extends DataTableSource {
     }
   }
 
+  Widget _buildDecoratedCell(Widget child) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Color.fromRGBO(10, 36, 114, 1),
+          width: 0.75,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: child,
+    );
+  }
+
   @override
   DataRow? getRow(int index) {
     if (index >= notices.length) return null;
     final notice = notices[index];
+
     return DataRow.byIndex(
       index: index,
       cells: [
-        DataCell(Text((index + 1).toString())),
-        DataCell(Text(notice.noticeTypeName)),
-        DataCell(Text(DateFormat('yyyy-MM-dd').format(notice.createdAt))),
+        DataCell(_buildDecoratedCell(Text((index + 1).toString(), style: TextStyle(fontSize: 12)))),
+        DataCell(_buildDecoratedCell(Text(notice.noticeTypeName, style: TextStyle(fontSize: 12)))),
+        DataCell(_buildDecoratedCell(Text(DateFormat('yyyy-MM-dd').format(notice.createdAt), style: TextStyle(fontSize: 12)))),
         DataCell(
-          Text(notice.filename, style: TextStyle(
-            color: Colors.blue,
-            decoration: TextDecoration.underline,
-          )),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => FileListScreen(
-                  filename: notice.filename, // Pass the filename
-                  ID: notice.id,
-
-
-                ),
+          _buildDecoratedCell(
+            GestureDetector(
+              onTap: () {
+                // context should be passed from the place where this method is called.
+              },
+              child: Text(
+                notice.filename,
+                style: TextStyle(fontSize: 12, color: Colors.blue, decoration: TextDecoration.underline),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ],
     );
@@ -107,4 +119,98 @@ class NoticeDataSource extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 }
+
+class NoticeTableScreen extends StatefulWidget {
+  @override
+  _NoticeTableScreenState createState() => _NoticeTableScreenState();
+}
+
+class _NoticeTableScreenState extends State<NoticeTableScreen> {
+  late NoticeDataSource _noticeDataSource;
+
+  @override
+  void initState() {
+    super.initState();
+    _noticeDataSource = NoticeDataSource();
+    _fetchNotices();
+  }
+
+  Future<void> _fetchNotices() async {
+    await _noticeDataSource.fetchData(DateTime.now().subtract(Duration(days: 30)), DateTime.now(), 'All', '');
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+
+      appBar: AppBar(
+        title: Text('Notices')
+
+      ),
+      body: _noticeDataSource.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _noticeDataSource.errorMessage.isNotEmpty
+          ? Center(child: Text('Error: ${_noticeDataSource.errorMessage}'))
+          : SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: Color.fromRGBO(10, 36, 114, 1),
+                width: 0.75,
+              ),
+            ),
+            child: DataTable(
+              columns: [
+                DataColumn(label: Text('S. No.')),
+                DataColumn(label: Text('Notice Type')),
+                DataColumn(label: Text('Date')),
+                DataColumn(label: Text('File Name')),
+              ],
+              rows: List<DataRow>.generate(
+                _noticeDataSource.rowCount,
+                    (index) {
+                  final DataRow? row = _noticeDataSource.getRow(index);
+                  if (row != null) {
+                    return DataRow(
+                      cells: row.cells.map((cell) {
+                        if (cell.child is GestureDetector) {
+                          final GestureDetector gestureDetector = cell.child as GestureDetector;
+                          return DataCell(
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => FileListScreen(
+                                      filename: _noticeDataSource.notices[index].filename,
+                                      ID: _noticeDataSource.notices[index].id,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: gestureDetector.child,
+                            ),
+                          );
+                        }
+                        return cell;
+                      }).toList(),
+                    );
+                  }
+                  return row!;
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 

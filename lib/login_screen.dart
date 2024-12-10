@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => MainScreen()),
       );
     } else {
-      // Handle login failure
+
       final errorMessage = json.decode(response.body)['message'];
       _showErrorDialog(errorMessage);
     }

@@ -1,4 +1,5 @@
 
+import 'package:lms_practice/consolidated_screen.dart';
 import 'package:lms_practice/login_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'files_screen.dart';
 import 'sbi_screen.dart';
 import 'searchscreen.dart';
 
-class MainScreen extends StatefulWidget {
+class  MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -33,19 +34,19 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
+              icon: Icon(Icons.dashboard_outlined),
               label: 'Dashboard',
               backgroundColor: Colors.grey
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.folder),
+              icon: Icon(Icons.file_copy),
               label: 'Files',
               backgroundColor: Colors.grey
-
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.search),
@@ -60,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
 
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.purple,
+        selectedItemColor: Colors.blue[900],
         onTap: _onItemTapped,
       ),
     );
