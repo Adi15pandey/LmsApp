@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
+// Import url_launcher
 
 class ConsignmentTracking extends StatefulWidget {
   final String consignmentId;
@@ -17,12 +20,21 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
   bool isLoading = true;
 
   // Token for authentication
-  final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgwODMyMiwiZXhwIjoxNzMzODk0NzIyfQ.ZiBY47T9tXvPXApijOuy6lsWuUmFlGx4Itv-brN6mLc';
-
+  // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk';
   // Fetch data with dynamic consignment ID
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
   Future<void> fetchData() async {
+    final token = await _getTokenFromPreferences();
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      return; // Optionally handle the case when the token is not found
+    }
+
     final response = await http.get(
-      Uri.parse('https://lms.test.recqarz.com/api/track/${widget.consignmentId}?page=1&limit=1000000'),
+      Uri.parse('https://lms.recqarz.com/api/track/${widget.consignmentId}?page=1&limit=1000000'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -32,8 +44,8 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
       final List<dynamic> data = json.decode(response.body)['data'];
 
       setState(() {
-        consignments = data;  // Update the list with the fetched data
-        isLoading = false;    // Stop the loading indicator
+        consignments = data;
+        isLoading = false;
       });
     } else {
       setState(() {
@@ -57,15 +69,25 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
   @override
   void initState() {
     super.initState();
-    fetchData(); // Fetch data when the widget is initialized
+    fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          foregroundColor: Color.fromRGBO(10,36,114,1),title: Text('Consignment Tracking')
+        foregroundColor: Color.fromRGBO(10, 36, 114, 1),
+        title: Text(
+          'Consignment Tracking',
+          style: GoogleFonts.poppins( // Apply the custom font here
+            textStyle: TextStyle(
+              fontWeight: FontWeight.bold,  // Customize the font weight
+              fontSize: 20, // Set the font size if needed
+            ),
+          ),
+        ),
       ),
+
 
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -96,12 +118,31 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
                   onPressed: () {
                     // Check if the PDF link is available and valid
                     if (consignment['pdf'] != null && consignment['pdf'].isNotEmpty) {
-                      _launchURL(consignment['pdf']); // Launch the PDF link
+                      _launchURL(consignment['pdf']);
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Text('Consignment Details Not Found'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     }
                   },
+
                 ),
                 onTap: () {
-                  // Add navigation or other logic here if needed
+
                 },
               ),
             ),

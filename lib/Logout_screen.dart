@@ -22,7 +22,7 @@ class LogoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Call the logout method as soon as the screen is built
+
     logout(context);
 
     return Scaffold(

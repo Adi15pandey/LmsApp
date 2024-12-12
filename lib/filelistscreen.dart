@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'file_model.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FileListScreen extends StatefulWidget {
   final String filename;
@@ -44,9 +46,18 @@ class _FileListScreenState extends State<FileListScreen> {
           .toList();
     });
   }
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
 
-  final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U";
+  // final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U";
   Future<void> fetchData() async {
+    final token = await _getTokenFromPreferences();
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      return; // Optionally handle the case when the token is not found
+    }
     final response = await http.get(
       Uri.parse(
           'https://lms.recqarz.com/api/notice/notices-entries?NoticeID=${widget.ID}&startDate=30/6/2000&endDate=30/6/2025&page=1&limit=100000000'),
@@ -103,7 +114,7 @@ class _FileListScreenState extends State<FileListScreen> {
                 ),
                 SizedBox(height: 16),
 
-                // Statuses with Tick or Cross Mark
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -266,12 +277,18 @@ class _FileListScreenState extends State<FileListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Files'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        titleTextStyle: TextStyle(
-            color: Color.fromRGBO(10, 36,114, 1), fontWeight: FontWeight.bold, fontSize: 20),
+        foregroundColor: Color.fromRGBO(10, 36, 114, 1),
+        title: Text(
+          'Files Detail',
+          style: GoogleFonts.poppins( // Apply the custom font here
+            textStyle: TextStyle(
+              fontWeight: FontWeight.bold,  // Customize the font weight
+              fontSize: 20, // Set the font size if needed
+            ),
+          ),
+        ),
       ),
+
 
       body:
 

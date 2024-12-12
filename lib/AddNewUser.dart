@@ -20,7 +20,6 @@ class AddNewUser extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // SizedBox(height: 10), // Space between the texts
             Text(
               'Sorry about that, but you don\'t have permission to access this page',
               textAlign: TextAlign.center,

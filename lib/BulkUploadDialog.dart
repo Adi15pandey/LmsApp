@@ -29,7 +29,7 @@ class _BulkUploadDialogState extends State<BulkUploadDialog> {
             selectedFile = file;
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('File selected: ${file.path}')),
+            SnackBar(content: Text('File selected: ${file.path}',))
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -48,7 +48,7 @@ class _BulkUploadDialogState extends State<BulkUploadDialog> {
     try {
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://lms.test.recqarz.com/api/econciliation/upload'),
+        Uri.parse('https://lms.recqarz.com/api/econciliation/upload'),
       );
 
       request.files.add(
@@ -59,7 +59,7 @@ class _BulkUploadDialogState extends State<BulkUploadDialog> {
       );
 
       request.headers.addAll({
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzc0NzMwNCwiZXhwIjoxNzMzODMzNzA0fQ.QtkiTyPLJDqwjaiO6ZY5NiG0SoOg2xSk44Jp2InVFuU',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk',
         'Content-Type': 'multipart/form-data',
       });
 

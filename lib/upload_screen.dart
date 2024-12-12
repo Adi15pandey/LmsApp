@@ -7,6 +7,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'BulkUploadDialog.dart';
 import 'filedatamodel.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class UploadScreen extends StatefulWidget {
   @override
@@ -21,11 +24,19 @@ class _UploadScreenState extends State<UploadScreen> {
     super.initState();
     fetchData();
   }
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
 
-  String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmYyYTI1NzFjNTI3YzgwMTYwMmQ5YWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzc0NzMwNCwiZXhwIjoxNzMzODMzNzA0fQ.QtkiTyPLJDqwjaiO6ZY5NiG0SoOg2xSk44Jp2InVFuU'; // Add your token here
-
+  // String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk';
   Future<void> fetchData() async {
-    final url = 'https://lms.test.recqarz.com/api/econciliation/get?page=1&limit=10000000';
+    final token = await _getTokenFromPreferences();
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      return; // Optionally handle the case when the token is not found
+    }
+    final url = 'https://lms.recqarz.com/api/econciliation/get?page=1&limit=10000';
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -64,10 +75,18 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Color.fromRGBO(10,36,114,1),
-        title: Text('Upload Data'),
-
+        foregroundColor: Color.fromRGBO(10, 36, 114, 1),
+        title: Text(
+          'Upload Data',
+          style: GoogleFonts.poppins(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -110,7 +129,7 @@ class _UploadScreenState extends State<UploadScreen> {
                           conciliationResponse!.conciliations[index].filename,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text('Created At: ${conciliationResponse!.conciliations[index].createdAt}'),
+                        subtitle: Text('Date and Time : ${conciliationResponse!.conciliations[index].createdAt}'),
                         trailing: IconButton(
                           icon: Icon(Icons.download),
                           color: Color.fromRGBO(228, 16, 16, 1.0),

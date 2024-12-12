@@ -8,6 +8,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'notice_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FilesScreen extends StatefulWidget {
   @override
@@ -25,19 +27,29 @@ class _FilesScreenState extends State<FilesScreen> {
   @override
   void initState() {
     super.initState();
-    _noticeDataSource = NoticeDataSource();
-    _loadData(); // Initial load
+    _noticeDataSource = NoticeDataSource([]);
+    _loadData();
+  }
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
   }
 
 
   void _loadData() async {
+
     String noticeTypeToFetch = _selectedNoticeType.isEmpty ? 'All' : _selectedNoticeType;
 
     final String formattedStartDate = DateFormat('yyyy-MM-dd').format(_startDate);
     final String formattedEndDate = DateFormat('yyyy-MM-dd').format(_endDate);
-    // final String urls = 'https://lms.recqarz.com/api/notice/notices?notice=$noticeTypeToFetch&startDate=$formattedStartDate&endDate=$formattedEndDate&page=1&limit=200';
-    // print(urls);
-    final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3UyNjYyfQ.eqwknvI3N9C9Vbxz6jAoCuenpkEZ06iFCo0TJqF3dww';
+
+    final token = await _getTokenFromPreferences();
+
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      return; // Optionally handle the case when the token is not found
+    }
+    // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk';
     final url = Uri.parse(
         'https://lms.recqarz.com/api/dashboard/getDataByClientId?clientId=NotALL&dateRange=$formattedStartDate,$formattedEndDate&serviceType=all&dateType=fileProcessed&noticeType=$noticeTypeToFetch'
     );
@@ -56,21 +68,26 @@ class _FilesScreenState extends State<FilesScreen> {
 
           final noticeList = noticesData.map((item) => NoticeModel.fromJson(item)).toList();
 
-          setState(() {
-            // Assuming NoticeDataSource expects a list of NoticeModel
-            _noticeDataSource = NoticeDataSource(noticeList);  // Pass the list of NoticeModel
-          });
+          if (noticeList.isNotEmpty) {
+            setState(() {
+              _noticeDataSource = NoticeDataSource(noticeList);
+              print({noticeList.length});
+            });
+          } else {
+            print('Notice data is empty');
+          }
+
 
         } else {
-          // Handle the case where the 'data' or 'results' key is missing
+
           print('Unexpected response structure: ${response.body}');
         }
       } else {
-        // Handle non-200 status codes here
+
         print('Failed to load notices. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      // Handle the error (e.g., parsing error, network issue, etc.)
+
       print('Error fetching data: $e');
     }
 
@@ -83,10 +100,15 @@ class _FilesScreenState extends State<FilesScreen> {
       appBar: AppBar(
         title: Text(
           'Files',
-          style: TextStyle(
-            color: Color.fromRGBO(10, 36, 114, 1),
+          style: GoogleFonts.poppins(
+            textStyle: TextStyle(
+              color: Color.fromRGBO(10, 36, 114, 1),
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
           ),
         ),
+
         automaticallyImplyLeading: Platform.isIOS ? true : false,
         actions: [
           IconButton(
@@ -102,7 +124,7 @@ class _FilesScreenState extends State<FilesScreen> {
                         _endDate = endDate;
                         _selectedNoticeType = selectedNoticeType.isEmpty ? 'All' : selectedNoticeType;
                       });
-                      _loadData(); // Re-fetch data with new filters
+                      _loadData();
                     },
                   );
                 },
@@ -111,15 +133,19 @@ class _FilesScreenState extends State<FilesScreen> {
           ),
         ],
       ),
-      body: NoticeDataTable(
+      body:
+      NoticeDataTable(
         startDate: _startDate,
         endDate: _endDate,
         selectedNoticeType: _selectedNoticeType.isEmpty ? 'All' : _selectedNoticeType,
         searchQuery: _searchQuery,
+        noticeDataSource: _noticeDataSource!,
+
       ),
     );
   }
 }
+
 class FilterDialog extends StatefulWidget {
   final Function(DateTime startDate, DateTime endDate, String selectedNoticeType) onApplyFilters;
 
@@ -136,9 +162,25 @@ class _FilterDialogState extends State<FilterDialog> {
   List<NoticeType> _noticeTypes = [];
 
 
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+    print('Token from SharedPreferences: $token'); // Add this line for debugging
+    return token;
+  }
+
+
+
   // Fetch notice types when the dialog is initialized
   Future<void> _fetchNoticeTypes() async {
-    final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzcxNzg2MiwiZXhwIjoxNzM0MzIyNjYyfQ.eqwknvI3N9C9Vbxz6jAoCuenpkEZ06iFCo0TJqF3dww';  // Replace with actual token
+    final token = await _getTokenFromPreferences();
+
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      return; // Optionally handle the case when the token is not found
+    }
+
+    // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk';  // Replace with actual token
     final url = Uri.parse('https://lms.recqarz.com/api/clientMapping/user');
 
     final response = await http.get(url, headers: {'Authorization': 'Bearer $token'});
@@ -160,6 +202,7 @@ class _FilterDialogState extends State<FilterDialog> {
     super.initState();
     _fetchNoticeTypes();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +238,8 @@ class _FilterDialogState extends State<FilterDialog> {
                 setState(() {
                   _selectedNoticeType = newValue ?? ' All';
                 });
+                // _fetchNoticeTypes();
+
               },
               items: [
                 DropdownMenuItem<String>(

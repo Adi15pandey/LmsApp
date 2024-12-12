@@ -137,7 +137,9 @@ class _NoticeTableScreenState extends State<NoticeTableScreen> {
 
   Future<void> _fetchNotices() async {
     await _noticeDataSource.fetchData(DateTime.now().subtract(Duration(days: 30)), DateTime.now(), 'All', '');
-    setState(() {});
+    setState(() {
+      // _noticeDataSource = NoticeDataSource(noticeList);
+    });
   }
 
   @override

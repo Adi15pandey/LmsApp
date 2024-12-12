@@ -47,8 +47,9 @@ dev_dependencies:
   flutter_linkify: ^6.0.0
   open_url: ^2.0.1
   url_launcher:
-  shared_preferences:
+  shared_preferences: ^2.3.3
   file_picker: ^8.1.4
+  google_fonts: any
 
 
 

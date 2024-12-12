@@ -9,12 +9,14 @@ class NoticeDataTable extends StatefulWidget {
   final DateTime endDate;
   final String selectedNoticeType;
   final String searchQuery;
+  final NoticeDataSource noticeDataSource;
 
   const NoticeDataTable({
     required this.startDate,
     required this.endDate,
     required this.selectedNoticeType,
     required this.searchQuery,
+    required this.noticeDataSource
   });
 
   @override

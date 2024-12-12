@@ -1,8 +1,7 @@
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart'as http;
+import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main_screen.dart';
 
 void main() {
@@ -12,9 +11,28 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LoginScreen(),
+    return FutureBuilder<String?>(
+      future: _getAuthToken(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+          );
+        }
+
+        // Check if the token exists
+        if (snapshot.hasData && snapshot.data != null) {
+          return MaterialApp(home: MainScreen()); // Go to MainScreen if token exists
+        } else {
+          return MaterialApp(home: LoginScreen()); // Show LoginScreen if no token
+        }
+      },
     );
+  }
+
+  Future<String?> _getAuthToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
   }
 }
 
@@ -40,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('https://lms.test.recqarz.com/api/user/login');
+    final url = Uri.parse('https://lms.recqarz.com/api/user/login');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -53,19 +71,43 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = false;
     });
-    if(response.statusCode== 200){
 
-      final responseData=json.decode(response.body);
-      final token =responseData['token'];
+    if (response.statusCode == 200) {
+      try {
+        final responseData = json.decode(response.body);
+        print('Response Data: $responseData');
 
-      // Navigate to the main screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
-      );
+        if (responseData.containsKey('data') &&
+            responseData['data'].containsKey('accessToken') &&
+            responseData['data']['accessToken'] != null) {
+          final token = responseData['data']['accessToken'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', token);
+
+
+          String? savedToken = prefs.getString('auth_token');
+          print('Saved Token: $savedToken');
+
+          // Navigate to the main screen
+          if (savedToken != null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen()),
+            );
+          } else {
+            _showErrorDialog('Token could not be saved.');
+          }
+        } else {
+          // Show error if the token is not found
+          _showErrorDialog('Token not found in response');
+        }
+      } catch (error) {
+        // Log the error if response parsing fails
+        _showErrorDialog('Error parsing response: $error');
+      }
     } else {
-
-      final errorMessage = json.decode(response.body)['message'];
+      final errorMessage = json.decode(response.body)['message'] ?? 'Unknown error';
       _showErrorDialog(errorMessage);
     }
   }
@@ -82,11 +124,12 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: () {
               Navigator.of(ctx).pop();
             },
-          )
+          ),
         ],
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,7 +178,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _login,
                 child: Text('Login'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.black,
                   padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -149,4 +193,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
