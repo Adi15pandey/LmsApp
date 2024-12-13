@@ -47,7 +47,7 @@ class _FilesScreenState extends State<FilesScreen> {
 
     if (token == null) {
       print('Token not found. Please log in again.');
-      return; // Optionally handle the case when the token is not found
+      return;
     }
     // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk';
     final url = Uri.parse(

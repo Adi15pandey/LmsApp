@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BulkUploadDialog extends StatefulWidget {
   final Function(File) onFileUploaded;
@@ -43,8 +44,19 @@ class _BulkUploadDialogState extends State<BulkUploadDialog> {
       );
     }
   }
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
 
   Future<bool> _uploadFileToServer(File file) async {
+    final token = await _getTokenFromPreferences();
+
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      // Optionally handle the case when the token is not found
+    }
+
     try {
       final request = http.MultipartRequest(
         'POST',
@@ -59,7 +71,7 @@ class _BulkUploadDialogState extends State<BulkUploadDialog> {
       );
 
       request.headers.addAll({
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'multipart/form-data',
       });
 

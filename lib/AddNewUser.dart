@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lms_practice/dashboard_screen.dart';
 import 'package:lms_practice/main_screen.dart';
 
 class AddNewUser extends StatelessWidget {

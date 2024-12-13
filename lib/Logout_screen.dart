@@ -33,14 +33,5 @@ class LogoutScreen extends StatelessWidget {
     );
   }
 }
-// void main() {
-//   runApp(MaterialApp(
-//     initialRoute: '/home',  // The initial route (home page) when the app starts
-//     routes: {
-//       '/home': (context) => DashboardScreen(),
-//       '/login': (context) => LoginScreen(),  // Define your login screen here
-//       '/logout': (context) => LogoutScreen(),  // Define the logout screen route
-//     },
-//   ));
-// }
+
 

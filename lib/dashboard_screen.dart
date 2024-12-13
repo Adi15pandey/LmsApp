@@ -59,10 +59,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (savedToken != null) {
       setState(() {
-        token = savedToken; // Only set the token if it's not null
+        token = savedToken;
       });
     } else {
-      print('Token not found'); // Token is not available
+      print('Token not found'); // Token is not availabl
       // Handle token not found case if needed (e.g., show error, redirect to login, etc.)
     }
   }
@@ -92,8 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // showError('Failed to load notice types: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error: $error'); // Debug print
-      // showError('An error occurred: $error');
+      print('Error: $error');
     }
   }
 
@@ -101,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if(token==null){
       print("Token not  Found");
       return;
-    }else print("found");
+    }else print(" Token found");
     final startDate = startDateController.text.isNotEmpty
         ? startDateController.text
         : DateFormat('yyyy-MM-dd').format(DateTime.now());

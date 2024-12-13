@@ -22,9 +22,9 @@ class MyApp extends StatelessWidget {
 
         // Check if the token exists
         if (snapshot.hasData && snapshot.data != null) {
-          return MaterialApp(home: MainScreen()); // Go to MainScreen if token exists
+          return MaterialApp(home: MainScreen());
         } else {
-          return MaterialApp(home: LoginScreen()); // Show LoginScreen if no token
+          return MaterialApp(home: LoginScreen());
         }
       },
     );

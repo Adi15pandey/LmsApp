@@ -186,13 +186,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         } else {
           setState(() {
             _isLoading = false;
-            _errorMessage = resultData['message'] ?? 'Failed to load data';
+            _errorMessage = resultData['message'] ?? '';
           });
         }
       } else {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Failed to load data';
+          _errorMessage = '';
         });
       }
     } catch (e) {

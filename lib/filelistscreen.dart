@@ -236,18 +236,18 @@ class _FileListScreenState extends State<FileListScreen> {
                         ],
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle tracking details tap
-                      },
-                      child: Column(
-                        children: [
-                          Icon(Icons.picture_as_pdf, color: Colors.red),
-                          SizedBox(height: 4),
-                          Text('Tracking Details', style: TextStyle(fontSize: 12)),
-                        ],
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle tracking details tap
+                    //   },
+                    //   child: Column(
+                    //     children: [
+                    //       Icon(Icons.picture_as_pdf, color: Colors.red),
+                    //       SizedBox(height: 4),
+                    //       Text('Tracking Details', style: TextStyle(fontSize: 12)),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ],

@@ -70,15 +70,14 @@
 //     );
 //   }
 // }
-import 'package:lms_practice/consolidated_screen.dart';
+import '';
+
 import 'package:lms_practice/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // Add this import for custom fonts
 import 'SearchResultScreen.dart';
 import 'dashboard_screen.dart';
 import 'files_screen.dart';
-import 'sbi_screen.dart';
-import 'searchscreen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -134,10 +133,10 @@ class _MainScreenState extends State<MainScreen> {
         onTap: _onItemTapped,
         selectedLabelStyle: GoogleFonts.poppins(
           textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ), // Custom font style for selected labels
+        ),
         unselectedLabelStyle: GoogleFonts.poppins(
           textStyle: TextStyle(fontSize: 14),
-        ), // Custom font style for unselected labels
+        ),
       ),
     );
   }

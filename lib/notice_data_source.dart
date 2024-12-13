@@ -4,6 +4,7 @@ import 'notice_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'filelistscreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NoticeDataSource extends DataTableSource {
   late List<NoticeModel> notices = [];
@@ -20,22 +21,33 @@ class NoticeDataSource extends DataTableSource {
     _isLoading = false;
     notifyListeners();
   }
+  Future<String?> _getTokenFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
 
   Future<void> fetchData(DateTime startDate, DateTime endDate, String selectedNoticeType, String searchQuery) async {
+    final token = await _getTokenFromPreferences();
+
+    if (token == null) {
+      print('Token not found. Please log in again.');
+      return; // Optionally handle the case when the token is not found
+    }
+
     final String apiUrl = 'https://lms.recqarz.com/api/notice/notices';
 
     final Map<String, String> params = {
       'startDate': DateFormat('yyyy-MM-dd').format(startDate),
       'endDate': DateFormat('yyyy-MM-dd').format(endDate),
       'page': '1',
-      'limit': '100000',
+      'limit': '1000000',
       'client': "",
       'notice': "",
       if (selectedNoticeType != 'All') 'NoticeID': selectedNoticeType,
       if (searchQuery.isNotEmpty) 'search': searchQuery,
     };
 
-    final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U';
+    // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U';
 
     try {
       final uri = Uri.parse(apiUrl).replace(queryParameters: params);

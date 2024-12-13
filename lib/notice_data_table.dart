@@ -60,7 +60,7 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;  // Get screen width
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       // appBar: AppBar(
@@ -130,7 +130,7 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
   Widget _buildNoticeRow(int index, NoticeModel notice, double screenWidth) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-      padding: EdgeInsets.all(screenWidth > 600 ? 12 : 8),  // Responsive padding
+      padding: EdgeInsets.all(screenWidth > 600 ? 12 : 8),
       decoration: BoxDecoration(
         border: Border.all(
           color: Color.fromRGBO(10, 36, 114, 1),
