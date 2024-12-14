@@ -62,8 +62,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         token = savedToken;
       });
     } else {
-      print('Token not found'); // Token is not availabl
-      // Handle token not found case if needed (e.g., show error, redirect to login, etc.)
+      print('Token not found'); // Token is not available
+
     }
   }
 
@@ -172,7 +172,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         foregroundColor: Color.fromRGBO(10, 36, 114, 1),
         title: Padding(
-          padding: const EdgeInsets.only(right:40), // Adjust the value as needed
+          padding: const EdgeInsets.only(right:40),
           child: Image.asset(
             'assets/images/Untitled-4 2 (1).png',
             height: 35, // Adjust the height according to your needs
