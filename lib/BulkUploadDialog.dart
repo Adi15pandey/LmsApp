@@ -54,7 +54,6 @@ class _BulkUploadDialogState extends State<BulkUploadDialog> {
 
     if (token == null) {
       print('Token not found. Please log in again.');
-      // Optionally handle the case when the token is not found
     }
 
     try {

@@ -79,7 +79,7 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
         foregroundColor: Color.fromRGBO(10, 36, 114, 1),
         title: Text(
           'Consignment Tracking',
-          style: GoogleFonts.poppins( // Apply the custom font here
+          style: GoogleFonts.poppins(
             textStyle: TextStyle(
               fontWeight: FontWeight.bold,  // Customize the font weight
               fontSize: 20, // Set the font size if needed
@@ -102,7 +102,7 @@ class _ConsignmentTrackingState extends State<ConsignmentTracking> {
                 color: Color.fromRGBO(10, 36, 114, 1),
                 width: 2.0, // Adjust the border width as needed
               ),
-              borderRadius: BorderRadius.circular(4.0), // Match the card border radius
+              borderRadius: BorderRadius.circular(4.0),
             ),
             child: Card(
               elevation: 2.0, // Optional: add elevation for shadow effect
