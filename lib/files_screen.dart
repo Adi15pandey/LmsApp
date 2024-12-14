@@ -139,7 +139,7 @@ class _FilesScreenState extends State<FilesScreen> {
         endDate: _endDate,
         selectedNoticeType: _selectedNoticeType.isEmpty ? 'All' : _selectedNoticeType,
         searchQuery: _searchQuery,
-        noticeDataSource: _noticeDataSource!,
+        noticeDataSource: _noticeDataSource,
 
       ),
     );
