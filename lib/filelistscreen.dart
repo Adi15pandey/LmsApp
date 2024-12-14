@@ -123,23 +123,28 @@ class _FileListScreenState extends State<FileListScreen> {
                       label: Row(
                         children: [
                           Text(
-                            rowData['smsStatus'] ?? 'Pending',
+                            rowData['smsStatus']?.toLowerCase() ?? 'Pending',
                             style: TextStyle(color: Colors.white),
                           ),
                           SizedBox(width: 4),
                           Icon(
-                            rowData['smsStatus'] == 'Delivered' ? Icons.close : Icons.check,
+                            rowData['smsStatus']?.toLowerCase() == 'delivered' ? Icons.check : Icons.close,
                             color: Colors.white,
                             size: 16,
                           ),
                         ],
                       ),
-                      backgroundColor: rowData['smsStatus'] == 'Delivered'
+                      backgroundColor: rowData['smsStatus']?.toLowerCase() == 'delivered'
                           ? Colors.green
-                          : Colors.green,
+                          : rowData['smsStatus']?.toLowerCase() == 'na'
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ],
                 ),
+
+
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -148,23 +153,24 @@ class _FileListScreenState extends State<FileListScreen> {
                       label: Row(
                         children: [
                           Text(
-                            rowData['notificationType'] ?? 'Pending',
+                            rowData['notificationType'] ?? 'N/A', // Or use the appropriate key for the label
                             style: TextStyle(color: Colors.white),
                           ),
                           SizedBox(width: 4),
                           Icon(
-                            rowData['notificationType'] == 'Delivered' ? Icons.close : Icons.check,
+                            rowData['notificationType'] == 'Open' ? Icons.check : Icons.check, // Check status instead
                             color: Colors.white,
                             size: 16,
                           ),
                         ],
                       ),
-                      backgroundColor: rowData['notificationType'] == 'Delivered'
-                          ? Colors.red
+                      backgroundColor: rowData['notificationType'] == 'Open' // Check if it's open or closed
+                          ? Colors.green
                           : Colors.green,
                     ),
                   ],
                 ),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -173,23 +179,27 @@ class _FileListScreenState extends State<FileListScreen> {
                       label: Row(
                         children: [
                           Text(
-                            rowData['status'] ?? 'Pending',
+                            rowData['whatsappStatus']?.toLowerCase() ?? 'pending',
                             style: TextStyle(color: Colors.white),
                           ),
                           SizedBox(width: 4),
                           Icon(
-                            rowData['status'] == 'Delivered' ? Icons.check : Icons.close,
+                            (rowData['whatsappStatus']?.toLowerCase() == 'delivered' || rowData['whatsappStatus']?.toLowerCase() == 'read')
+                                ? Icons.check
+                                : Icons.close,
                             color: Colors.white,
                             size: 16,
                           ),
                         ],
                       ),
-                      backgroundColor: rowData['status'] == 'Delivered'
+                      backgroundColor: (rowData['whatsappStatus']?.toLowerCase() == 'delivered' || rowData['whatsappStatus']?.toLowerCase() == 'read')
                           ? Colors.green
                           : Colors.red,
                     ),
                   ],
                 ),
+
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -377,7 +387,7 @@ class _FileListScreenState extends State<FileListScreen> {
                           fontWeight: FontWeight.bold,
                           color: Color.fromRGBO(10, 36, 114, 1),
                           fontSize: screenWidth < 600 ? 12 : 14,
-                          decoration: TextDecoration.underline,
+
                         ),
                       ),
                     ),
@@ -472,10 +482,12 @@ class _FileListScreenState extends State<FileListScreen> {
                             onTap: () {
                               _showDetailDialog({
                                 'name': notice.data.name,
-                                'date': notice.data.date,
-                                'status': notice.whatsappStatus,
+                                // 'date': notice.data.date,
+
                                 'smsStatus': notice.smsStatus,
+
                                 'notificationType': notice.notificationType,
+                                'whatsappStatus': notice.whatsappStatus,
                                 'processIndiaPost': notice.processIndiaPost,
                                 'shortURL': notice.shortURL,
 

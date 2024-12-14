@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _showErrorDialog('Token not found in response');
         }
       } catch (error) {
-        // Log the error if response parsing fails
+
         _showErrorDialog('Error parsing response: $error');
       }
     } else {
