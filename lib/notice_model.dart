@@ -34,7 +34,7 @@ class NoticeModel {
   }
 
   // Method to convert NoticeModel to JSON (for sending data to API)
-  Map<String, dynamic> toJson() {
+  Map<String ,dynamic> toJson() {
     return {
       'index': index,  // `index` can be null now
       'noticeTypeName': noticeTypeName,

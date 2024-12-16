@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -107,8 +108,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final endDate = endDateController.text.isNotEmpty
         ? endDateController.text
         : DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final noticeType = selectedNoticeType;
 
+    final noticeType = selectedNoticeType;
     final url = 'https://lms.recqarz.com/api/dashboard/getDataByClientId?clientId=NotALL'
         '&dateRange=${startDate.isNotEmpty && endDate.isNotEmpty ? '$startDate,$endDate' : ''}'
         '&serviceType=all'
@@ -290,6 +291,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                   ),
+                  // Container(
+                  //     padding: EdgeInsets.all(16.0),
+                  //     child: Text(
+                  //       '© 2024 Recqarz, All Rights Reserved',
+                  //       style: TextStyle(
+                  //         fontSize: 14,
+                  //         fontWeight: FontWeight.bold,
+                  //         color: Colors.black,
+                  //
+                  //       ),
+                  //     ),
+                  //   ),
+
+
                 ],
               ),
             ),

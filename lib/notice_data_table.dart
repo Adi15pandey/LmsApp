@@ -174,7 +174,6 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
     );
   }
 
-  // Method to build decorated cell with responsive padding
   Widget _buildDecoratedCell(Widget child) {
     return Expanded(  // Use Expanded to avoid overflow
       child: Container(

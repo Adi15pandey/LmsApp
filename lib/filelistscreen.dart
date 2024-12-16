@@ -21,6 +21,7 @@ class _FileListScreenState extends State<FileListScreen> {
   List<Notice> _filteredNotices = [];
   List<Notice> _notices = [];
   TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchNameController = TextEditingController();
 
   bool _isLoading = true;
 
@@ -29,21 +30,30 @@ class _FileListScreenState extends State<FileListScreen> {
     super.initState();
     fetchData();
     _searchController.addListener(_filterNotices);
+    _searchNameController.addListener(_filterNotices);
+
 
   }
   @override
   void dispose() {
     _searchController.dispose();
+    _searchNameController.dispose();
     super.dispose();
   }
 
   void _filterNotices() {
-    String query = _searchController.text.toLowerCase();
+    String accountQuery = _searchController.text.toLowerCase();
+    String nameQuery = _searchNameController.text.toLowerCase();
     setState(() {
-      _filteredNotices = _notices
-          .where((notice) =>
-          notice.data.account.toString().toLowerCase().contains(query))
-          .toList();
+      _filteredNotices = _notices.where((notice) {
+        bool matchesAccount = notice.data.account.toString().toLowerCase().contains(accountQuery);
+        bool matchesName = notice.data.name.toLowerCase().contains(nameQuery);
+        // bool matchesMobile = notice.data.mobileNumber.toString().toLowerCase().contains(mobileQuery);
+        print("Matches Account: $matchesAccount, Matches Name: $matchesName");
+
+        return (accountQuery.isEmpty || matchesAccount) &&
+            (nameQuery.isEmpty || matchesName);  // Show results matching any of the filters
+      }).toList();
     });
   }
   Future<String?> _getTokenFromPreferences() async {
@@ -70,6 +80,7 @@ class _FileListScreenState extends State<FileListScreen> {
       final List<dynamic> data = json.decode(response.body)['data'];
       setState(() {
         _notices = data.map((json) => Notice.fromJson(json)).toList();
+        _filteredNotices = List.from(_notices);
         _isLoading = false;
       });
     } else {
@@ -303,10 +314,64 @@ class _FileListScreenState extends State<FileListScreen> {
       body:
 
 
+
       _isLoading
           ? Center(child: CircularProgressIndicator())
           : Column(
+
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row( children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      labelText: 'Account',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: TextField(
+                    controller: _searchNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                ),
+              ),
+
+
+            ]
+
+
+            )
+
+          ),
+          // Expanded(
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          //     child: TextField(
+          //       controller: _searchController,
+          //       decoration: InputDecoration(
+          //         labelText: 'Search by Account Number',
+          //         border: OutlineInputBorder(),
+          //         prefixIcon: Icon(Icons.search),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+
           // Header Row
           Container(
             margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
@@ -397,13 +462,17 @@ class _FileListScreenState extends State<FileListScreen> {
             ),
           ),
 
+
           // ListView Builder for Data Rows
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
-              itemCount: _notices.length,
-              itemBuilder: (context, index) {
-                Notice notice = _notices[index];
+              itemCount: _filteredNotices.isNotEmpty ? _filteredNotices.length : 0,
+    itemBuilder: (context, index) {
+    if (_filteredNotices.isEmpty) {
+    return Center(child: Text("No records found"));
+    }
+
+    final notice = _filteredNotices[index];
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 8.0),
