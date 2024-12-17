@@ -111,7 +111,6 @@ class NoticeDataSource extends DataTableSource {
           _buildDecoratedCell(
             GestureDetector(
               onTap: () {
-                // context should be passed from the place where this method is called.
               },
               child: Text(
                 notice.filename,
@@ -150,7 +149,7 @@ class _NoticeTableScreenState extends State<NoticeTableScreen> {
   Future<void> _fetchNotices() async {
     await _noticeDataSource.fetchData(DateTime.now().subtract(Duration(days: 30)), DateTime.now(), 'All', '');
     setState(() {
-      // _noticeDataSource = NoticeDataSource(noticeList);
+
     });
   }
 

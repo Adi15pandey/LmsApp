@@ -165,7 +165,7 @@ class _FilterDialogState extends State<FilterDialog> {
   Future<String?> _getTokenFromPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
-    print('Token from SharedPreferences: $token'); // Add this line for debugging
+    print('Token from SharedPreferences: $token');
     return token;
   }
 
@@ -177,7 +177,7 @@ class _FilterDialogState extends State<FilterDialog> {
 
     if (token == null) {
       print('Token not found. Please log in again.');
-      return; // Optionally handle the case when the token is not found
+      return;
     }
 
     // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzkwNTg0NiwiZXhwIjoxNzM0NTEwNjQ2fQ.YIoKP6gZm5oYdzYMKc46fsKYAqTTM-gfnLE0YN9Egzk';  // Replace with actual token

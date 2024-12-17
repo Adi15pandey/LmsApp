@@ -175,7 +175,7 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
   }
 
   Widget _buildDecoratedCell(Widget child) {
-    return Expanded(  // Use Expanded to avoid overflow
+    return Expanded(
       child: Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(

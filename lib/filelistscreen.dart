@@ -321,11 +321,11 @@ class _FileListScreenState extends State<FileListScreen> {
 
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: Row( children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
