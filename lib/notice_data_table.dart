@@ -75,7 +75,7 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
           children: [
             // Header Row
             Container(
-              margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              margin: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
               padding: EdgeInsets.all(screenWidth > 600 ? 12 : 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(01),
@@ -132,6 +132,7 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
       padding: EdgeInsets.all(screenWidth > 600 ? 12 : 8),
       decoration: BoxDecoration(
+        color: Color.fromRGBO(238, 240, 250, 1.0),
         border: Border.all(
           color: Color.fromRGBO(10, 36, 114, 1),
           width: 0.75,

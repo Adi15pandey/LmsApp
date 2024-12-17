@@ -321,42 +321,46 @@ class _FileListScreenState extends State<FileListScreen> {
 
         children: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row( children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      labelText: 'Account',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.search),
+            padding: const EdgeInsets.all(8.0), // Reduced outer padding
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced inner padding
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        labelText: 'Account No:',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0), // Rounded corners here
+                        ),
+                        prefixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0), // Reduced height here
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: TextField(
-                    controller: _searchNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.search),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0), // Reduced inner padding
+                    child: TextField(
+                      controller: _searchNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),// Rounded corners here
+                        ),
+                        prefixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0), // Reduced height here
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
+            ),
+          )
 
-
-            ]
-
-
-            )
-
-          ),
+          ,
           // Expanded(
           //   child: Padding(
           //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -376,9 +380,8 @@ class _FileListScreenState extends State<FileListScreen> {
           Container(
             margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
             padding: EdgeInsets.symmetric(vertical: 8.0),
-            // decoration: BoxDecoration(
-            //   color: Color.fromRGBO(10, 36, 114, 1),
-            //   // borderRadius: BorderRadius.circular(10.0),
+
+
             // ),
             child: Row(
               children: [
@@ -429,7 +432,7 @@ class _FileListScreenState extends State<FileListScreen> {
                   flex: 2,
                   child: Center(
                     child: Text(
-                      "Account",
+                      "Account No:",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color.fromRGBO(10, 36, 114, 1),
@@ -479,7 +482,7 @@ class _FileListScreenState extends State<FileListScreen> {
                   width: 328, // Fixed width as per your layout
                   height: 40, // Fixed height as per your layout
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                      color: Color.fromRGBO(238, 240, 250, 1.0),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15),

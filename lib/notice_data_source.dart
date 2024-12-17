@@ -26,7 +26,7 @@ class NoticeDataSource extends DataTableSource {
     return prefs.getString('auth_token');
   }
 
-  Future<void> fetchData(DateTime startDate, DateTime endDate, String selectedNoticeType, String searchQuery) async {
+  Future<void> fetchData(DateTime startDate, DateTime endDate, String selectedNoticeType, String searchQuery,) async {
     final token = await _getTokenFromPreferences();
 
     if (token == null) {

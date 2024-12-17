@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
           String? savedToken = prefs.getString('auth_token');
           print('Saved Token: $savedToken');
 
-          // Navigate to the main screen
+
           if (savedToken != null) {
             Navigator.pushReplacement(
               context,

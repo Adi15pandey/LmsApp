@@ -122,7 +122,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     child: Card(
                       elevation: 2.0, // Optional: add elevation for shadow effect
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0), // Match the container border radius
+                        borderRadius: BorderRadius.circular(4.0),
                       ),
                       child: ListTile(
                         title: Text(
