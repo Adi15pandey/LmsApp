@@ -195,7 +195,9 @@ class _FileListScreenState extends State<FileListScreen> {
                           ),
                           SizedBox(width: 4),
                           Icon(
-                            (rowData['whatsappStatus']?.toLowerCase() == 'delivered' || rowData['whatsappStatus']?.toLowerCase() == 'read')
+                            (rowData['whatsappStatus']?.toLowerCase() == 'delivered' ||
+                                rowData['whatsappStatus']?.toLowerCase() == 'read' ||
+                                rowData['whatsappStatus']?.toLowerCase() == 'sent')
                                 ? Icons.check
                                 : Icons.close,
                             color: Colors.white,
@@ -203,12 +205,15 @@ class _FileListScreenState extends State<FileListScreen> {
                           ),
                         ],
                       ),
-                      backgroundColor: (rowData['whatsappStatus']?.toLowerCase() == 'delivered' || rowData['whatsappStatus']?.toLowerCase() == 'read')
+                      backgroundColor: (rowData['whatsappStatus']?.toLowerCase() == 'delivered' ||
+                          rowData['whatsappStatus']?.toLowerCase() == 'read' ||
+                          rowData['whatsappStatus']?.toLowerCase() == 'sent')
                           ? Colors.green
                           : Colors.red,
                     ),
                   ],
                 ),
+
 
 
                 Row(
@@ -300,7 +305,7 @@ class _FileListScreenState extends State<FileListScreen> {
       appBar: AppBar(
         foregroundColor: Color.fromRGBO(10, 36, 114, 1),
         title: Text(
-          'Files Detail',
+          'Files Details',
           style: GoogleFonts.poppins( // Apply the custom font here
             textStyle: TextStyle(
               fontWeight: FontWeight.bold,  // Customize the font weight

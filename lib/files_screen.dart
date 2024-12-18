@@ -99,7 +99,7 @@ class _FilesScreenState extends State<FilesScreen> {
 
       appBar: AppBar(
         title: Text(
-          'Files',
+          'Notice Data',
           style: GoogleFonts.poppins(
             textStyle: TextStyle(
               color: Color.fromRGBO(10, 36, 114, 1),
@@ -232,32 +232,32 @@ class _FilterDialogState extends State<FilterDialog> {
               },
             ),
             SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: _selectedNoticeType,
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedNoticeType = newValue ?? ' All';
-                });
-                // _fetchNoticeTypes();
-
-              },
-              items: [
-                DropdownMenuItem<String>(
-                  value: 'All',
-                  child: Text('All'),
-                ),
-                ..._noticeTypes.map((NoticeType type) {
-                  return DropdownMenuItem<String>(
-                    value: type.notice.id,
-                    child: Text(type.notice.noticeTypeName),
-                  );
-                }).toList(),
-              ],
-              decoration: InputDecoration(
-                labelText: 'Notice Type',
-                border: OutlineInputBorder(),
-              ),
-            ),
+            // DropdownButtonFormField<String>(
+            //   value: _selectedNoticeType,
+            //   onChanged: (newValue) {
+            //     setState(() {
+            //       _selectedNoticeType = newValue ?? ' All';
+            //     });
+            //     // _fetchNoticeTypes();
+            //
+            //   },
+            //   items: [
+            //     DropdownMenuItem<String>(
+            //       value: 'All',
+            //       child: Text('All'),
+            //     ),
+            //     ..._noticeTypes.map((NoticeType type) {
+            //       return DropdownMenuItem<String>(
+            //         value: type.notice.id,
+            //         child: Text(type.notice.noticeTypeName),
+            //       );
+            //     }).toList(),
+            //   ],
+            //   decoration: InputDecoration(
+            //     labelText: 'Notice Type',
+            //     border: OutlineInputBorder(),
+            //   ),
+            // ),
             SizedBox(height: 10),
           ],
         ),
