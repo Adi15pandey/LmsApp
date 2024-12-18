@@ -252,25 +252,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                   ),
-                  ListTile(
-                    leading: Icon(Icons.fiber_new_rounded),
-                    title: Text(
-                      'Add New User',
-                      style: GoogleFonts.roboto(
-                        textStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => AddNewUser()),
-                      );
-                    },
-                  ),
+                  // ListTile(
+                  //   leading: Icon(Icons.fiber_new_rounded),
+                  //   title: Text(
+                  //     'Add New User',
+                  //     style: GoogleFonts.roboto(
+                  //       textStyle: TextStyle(
+                  //         fontSize: 18,
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //     Navigator.pushReplacement(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => AddNewUser()),
+                  //     );
+                  //   },
+                  // ),
                   ListTile(
                     leading: Icon(Icons.logout),
                     title: Text(
@@ -282,51 +282,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                     ),
-                    onTap: () async {
-                      // Show confirmation dialog
-                      bool shouldLogout = await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Are you sure you want to log out?"),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(false);
-                                },
-                                child: Text("Cancel"),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(true);
-                                },
-                                child: Text("Okay"),
-                              ),
-                            ],
-                          );
-                        },
+                    onTap: ()  {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LogoutScreen()),
                       );
-                      if (shouldLogout) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        );
-                      }
+
+                      // Show confirmation dialog
+
                     },
                   )
 
-                  // Container(
-                  //     padding: EdgeInsets.all(16.0),
-                  //     child: Text(
-                  //       '© 2024 Recqarz, All Rights Reserved',
-                  //       style: TextStyle(
-                  //         fontSize: 14,
-                  //         fontWeight: FontWeight.bold,
-                  //         color: Colors.black,
-                  //
-                  //       ),
-                  //     ),
-                  //   ),
 
 
                 ],
