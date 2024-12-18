@@ -5,20 +5,20 @@ import 'package:lms_practice/Logout_screen.dart';
 import 'package:lms_practice/Tracking_screen.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lms_practice/login_screen.dart';
 import 'package:lms_practice/upload_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AddNewUser.dart';
-
 void main() {
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // title: 'LMS Dashboard',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -56,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
   Future<void> fetchToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? savedToken = prefs.getString('auth_token'); // Retrieve the saved token
+    String? savedToken = prefs.getString('auth_token');
 
     if (savedToken != null) {
       setState(() {
@@ -96,7 +96,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print('Error: $error');
     }
   }
-
   Future<void> fetchData() async {
     if(token==null){
       print("Token not  Found");
@@ -283,14 +282,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                     ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LogoutScreen()),
+                    onTap: () async {
+                      // Show confirmation dialog
+                      bool shouldLogout = await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Are you sure you want to log out?"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(false);
+                                },
+                                child: Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                child: Text("Okay"),
+                              ),
+                            ],
+                          );
+                        },
                       );
+                      if (shouldLogout) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
+                      }
                     },
-                  ),
+                  )
+
                   // Container(
                   //     padding: EdgeInsets.all(16.0),
                   //     child: Text(

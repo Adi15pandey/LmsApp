@@ -26,7 +26,8 @@ class NoticeDataSource extends DataTableSource {
     return prefs.getString('auth_token');
   }
 
-  Future<void> fetchData(DateTime startDate, DateTime endDate, String selectedNoticeType, String searchQuery,) async {
+  Future<void> fetchData(DateTime startDate, DateTime endDate, String selectedNoticeType, String searchQuery,int page,int limit) async {
+
     final token = await _getTokenFromPreferences();
 
     if (token == null) {
@@ -40,12 +41,13 @@ class NoticeDataSource extends DataTableSource {
       'startDate': DateFormat('yyyy-MM-dd').format(startDate),
       'endDate': DateFormat('yyyy-MM-dd').format(endDate),
       'page': '1',
-      'limit': '1000000',
+      'limit': '1000000000000',
       'client': "",
       'notice': "",
       if (selectedNoticeType != 'All') 'NoticeID': selectedNoticeType,
       if (searchQuery.isNotEmpty) 'search': searchQuery,
     };
+    print('Request Parameters: $params');
 
     // final String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhiYWY0ZjJlNGUyNWI5ZTRmZThiN2YiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMzgyMjk4OCwiZXhwIjoxNzM0NDI3Nzg4fQ.BuBjr2SlMBhyS2B3HV5PPHP8f5gGUsyV6I8A2It4O3U';
 
@@ -71,7 +73,7 @@ class NoticeDataSource extends DataTableSource {
         _isLoading = false;
         notifyListeners();
       } else {
-        _errorMessage = 'Failed to load data';
+        // _errorMessage = 'Failed to load data';
         _isLoading = false;
         notifyListeners();
       }
@@ -147,7 +149,7 @@ class _NoticeTableScreenState extends State<NoticeTableScreen> {
   }
 
   Future<void> _fetchNotices() async {
-    await _noticeDataSource.fetchData(DateTime.now().subtract(Duration(days: 30)), DateTime.now(), 'All', '');
+    await _noticeDataSource.fetchData(DateTime.now().subtract(Duration(days: 366)), DateTime.now(), 'All', '',1,10);
     setState(() {
 
     });
@@ -164,6 +166,9 @@ class _NoticeTableScreenState extends State<NoticeTableScreen> {
       ),
       body: _noticeDataSource.isLoading
           ? Center(child: CircularProgressIndicator())
+
+
+
           : _noticeDataSource.errorMessage.isNotEmpty
           ? Center(child: Text('Error: ${_noticeDataSource.errorMessage}'))
           : SingleChildScrollView(

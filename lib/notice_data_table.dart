@@ -40,6 +40,8 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
       widget.endDate,
       widget.selectedNoticeType,
       widget.searchQuery,
+      1, 10
+
     ).then((_) {
       setState(() {});
     });
@@ -67,7 +69,37 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
       //   title: Text('Notices'),
       // ),
       body: _noticeDataSource.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text(
+              'Please wait, data is being loaded...',
+              style: TextStyle(
+                color: Color.fromRGBO(10, 36, 114, 1),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'This might take a few seconds.',
+              style: TextStyle(
+                color: Color.fromRGBO(10, 36, 114, 1),
+                fontSize: 14,
+              ),
+            ),
+            SizedBox(height: 16),
+            // Optional: Add an animation or image here
+            // For example, you can use an asset image:
+            // Image.asset('assets/loading_image.png', height: 100),
+          ],
+        ),
+      )
+
+
           : _noticeDataSource.errorMessage.isNotEmpty
           ? Center(child: Text(_noticeDataSource.errorMessage))
           : SingleChildScrollView(
@@ -75,7 +107,7 @@ class _NoticeDataTableState extends State<NoticeDataTable> {
           children: [
             // Header Row
             Container(
-              margin: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+              margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
               padding: EdgeInsets.all(screenWidth > 600 ? 12 : 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(01),

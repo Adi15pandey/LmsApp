@@ -316,7 +316,35 @@ class _FileListScreenState extends State<FileListScreen> {
 
 
       _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text(
+              'Please wait, data is being loaded...',
+              style: TextStyle(
+                color: Color.fromRGBO(10, 36, 114, 1),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'This might take a few seconds.',
+              style: TextStyle(
+                color: Color.fromRGBO(10, 36, 114, 1),
+                fontSize: 14,
+              ),
+            ),
+            SizedBox(height: 16),
+            // Optional: Add an animation or image here
+            // For example, you can use an asset image:
+            // Image.asset('assets/loading_image.png', height: 100),
+          ],
+        ),
+      )
           : Column(
 
         children: [

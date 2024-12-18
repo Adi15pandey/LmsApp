@@ -226,8 +226,39 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              if (_isLoading)
-                CircularProgressIndicator()
+              if (_isLoading) ...[
+                // Loading indicator and messages
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text(
+                        'Please wait, data is being loaded...',
+                        style: TextStyle(
+                          color: Color.fromRGBO(10, 36, 114, 1),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'This might take a few seconds.',
+                        style: TextStyle(
+                          color: Color.fromRGBO(10, 36, 114, 1),
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                    ],
+                  ),
+                ),
+              ]
+
+
+
               else if (_errorMessage.isNotEmpty)
                 Text(
                   _errorMessage,

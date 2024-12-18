@@ -107,7 +107,7 @@ class _FilesScreenState extends State<FilesScreen> {
               fontSize: 20,
             ),
           ),
-        ),elevation: 10.0,
+        ),
 
         automaticallyImplyLeading: Platform.isIOS ? true : false,
         actions: [

@@ -17,7 +17,6 @@ class LogoutScreen extends StatelessWidget {
     );
 
 
-    // Navigator.pushReplacementNamed(context, '/login');  // Replace '/login' with your actual login screen's route name
   }
 
   @override

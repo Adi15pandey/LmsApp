@@ -111,7 +111,7 @@ class Data {
     if (mobileNumberJson is int) {
       return mobileNumberJson;
     }
-    return 0;  // Default to 0 if neither string nor int
+    return 0;
   }
 
   // Helper function to parse the date

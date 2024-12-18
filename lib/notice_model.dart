@@ -25,7 +25,7 @@ class NoticeModel {
     }
 
     return NoticeModel(
-      id: json['_id'] ?? '',  // Ensure the ID is never null
+      id: json['_id'] ?? '',
       index: json['index'] != null ? json['index'] as int : null,
       noticeTypeName: json['notice']?['notice']?['noticeTypeName'] ?? '',
       createdAt: parsedDate,
@@ -33,7 +33,6 @@ class NoticeModel {
     );
   }
 
-  // Method to convert NoticeModel to JSON (for sending data to API)
   Map<String ,dynamic> toJson() {
     return {
       'index': index,  // `index` can be null now
