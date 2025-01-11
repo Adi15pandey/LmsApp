@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lms_practice/Verfiy_otp.dart';
+import 'package:lms_practice/main_screen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'main_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +21,6 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        // Check if the token exists
         if (snapshot.hasData && snapshot.data != null) {
           return MaterialApp(home: MainScreen());
         } else {
@@ -47,6 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
+  final String hardcodedEmail = "test@admin.com";
+  final String hardcodedPassword = "12345";
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -59,18 +62,39 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    // Check for hardcoded email and password
+    if (email == hardcodedEmail && password == hardcodedPassword) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('auth_token', 'hardcoded_token');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Logged in as Admin.')),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
+      return;
+    }
+
+    // Proceed with OTP verification for other emails
+    await _initiateOtpLogin(email, password);
+  }
+
+  Future<void> _initiateOtpLogin(String email, String password) async {
     setState(() {
       _isLoading = true;
     });
 
-    final url = Uri.parse('https://lms.recqarz.com/api/user/login');
+    final url = Uri.parse('https://lms.test.recqarz.com/api/user/initiateLoginAndGenerateOtp');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      }),
+      body: json.encode({'email': email, 'password': password}),
     );
 
     setState(() {
@@ -82,27 +106,20 @@ class _LoginScreenState extends State<LoginScreen> {
         final responseData = json.decode(response.body);
         print('Response Data: $responseData');
 
-        if (responseData.containsKey('data') &&
-            responseData['data'].containsKey('accessToken') &&
-            responseData['data']['accessToken'] != null) {
-          final token = responseData['data']['accessToken'];
+        if (responseData['success'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('OTP sent successfully.')),
+          );
 
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('auth_token', token);
-
-          String? savedToken = prefs.getString('auth_token');
-          print('Saved Token: $savedToken');
-
-          if (savedToken != null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MainScreen()),
-            );
-          } else {
-            _showErrorDialog('Token could not be saved.');
-          }
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Verifyotpclient(storedEmail: email),
+            ),
+          );
         } else {
-          _showErrorDialog('Token not found in response');
+          final message = responseData['message'] ?? 'Login failed';
+          _showErrorDialog(message);
         }
       } catch (error) {
         _showErrorDialog('Error parsing response: $error');

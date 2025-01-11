@@ -1,4 +1,4 @@
-package com.example.lms_practice
+package com.rec.lms_practice
 
 import io.flutter.embedding.android.FlutterActivity
 
